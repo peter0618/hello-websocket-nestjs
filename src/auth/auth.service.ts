@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../modules/user/user.service';
 import { User } from '../modules/user/entity/user.entity';
+import { validateHash } from '../common/utils/crypto.util';
 
 /**
  * 인증 관련 비즈니스 로직을 처리하는 서비스입니다.
@@ -20,13 +21,11 @@ export class AuthService {
    * @param loginId
    * @param password
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async validateUser(loginId: string, password: string) {
-    // fixme
-    // const user = await this.userServer.getByLoginId(loginId);
-    // if (user && (await validateHash(password, user.password))) {
-    //   return user;
-    // }
+    const user = await this.userServer.getByLoginId(loginId);
+    if (user && (await validateHash(password, user.password))) {
+      return user;
+    }
     return null;
   }
 

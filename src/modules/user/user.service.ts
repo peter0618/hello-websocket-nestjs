@@ -4,6 +4,7 @@ import { UserRepository } from './user.repository';
 import { UserMapper } from './mapper/user.mapper';
 import { CreateUserResDto } from './dto/user.response.dto';
 import { generateHash } from '../../common/utils/crypto.util';
+import { User } from './entity/user.entity';
 
 @Injectable()
 export class UserService {
@@ -34,5 +35,21 @@ export class UserService {
   async isLoginIdDuplicate(loginId: string): Promise<boolean> {
     const count = await this.userRepository.count({ loginId });
     return count > 0;
+  }
+
+  /**
+   * 사용자를 유일식별자로 조회합니다.
+   * @param userId
+   */
+  getById(userId: number): Promise<User> {
+    return this.userRepository.findOne({ id: userId });
+  }
+
+  /**
+   * 사용자를 로그인 아이디로 조회합니다.
+   * @param loginId
+   */
+  getByLoginId(loginId: string): Promise<User> {
+    return this.userRepository.findOne({ loginId });
   }
 }
