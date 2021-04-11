@@ -5,10 +5,17 @@ import { UserMapper } from './mapper/user.mapper';
 import { CreateUserResDto } from './dto/user.response.dto';
 import { generateHash } from '../../common/utils/crypto.util';
 import { User } from './entity/user.entity';
+import { generate_sign_up_alarm_message } from '../../common/utils/slack.message.template';
+import { SlackUtil } from '../../common/utils/slack.util';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository, private readonly userMapper: UserMapper) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly userMapper: UserMapper,
+    private readonly configService: ConfigService,
+  ) {}
 
   /**
    * 사용자 Entity 를 생성하여 리턴합니다.
@@ -25,6 +32,16 @@ export class UserService {
 
     // 3) 사용자 생성
     const userEntity = await this.userRepository.save(Object.assign(dto, { password }));
+
+    // 4) 사용자 생성 슬랙 알림
+    // fixme event emitter 로 빼는 것이 구조적으로 더 좋을 것 같습니다.
+    const appEnv = this.configService.get<string>('APP_ENV');
+    if (appEnv === 'prod') {
+      const title = '신규 회원가입 알림';
+      const message = generate_sign_up_alarm_message(userEntity);
+      const icon = ':helmet_with_white_cross';
+      SlackUtil.send(title, message, null, icon);
+    }
     return this.userMapper.toCreateUserResponseDto(userEntity);
   }
 
