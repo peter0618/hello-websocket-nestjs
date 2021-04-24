@@ -7,6 +7,14 @@ import { User } from '../user/entity/user.entity';
 export class GameRoomService {
   constructor(private readonly gameRoomRepository: GameRoomRepository) {}
   create(user: User, dto: CreateGameRoomReqDto) {
-    return this.gameRoomRepository.save({ ...dto, createdBy: user });
+    return this.gameRoomRepository.save({ ...dto, user });
+  }
+
+  findAll() {
+    return this.gameRoomRepository
+      .createQueryBuilder('gameRoom')
+      .innerJoin('gameRoom.user', 'user')
+      .select(['gameRoom', 'user.nickName'])
+      .getMany();
   }
 }
