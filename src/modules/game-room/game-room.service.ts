@@ -17,4 +17,19 @@ export class GameRoomService {
       .select(['gameRoom', 'user.nickName'])
       .getMany();
   }
+
+  /**
+   * 특정 채팅방 정보를 조회합니다.
+   * @param id
+   */
+  async findById(id: number) {
+    const gameRoom = await this.gameRoomRepository
+      .createQueryBuilder('gameRoom')
+      .innerJoin('gameRoom.user', 'user')
+      .select(['gameRoom', 'user.nickName', 'user.id'])
+      .where(`gameRoom.id = ${id}`)
+      .getOne();
+
+    return gameRoom ? gameRoom : null;
+  }
 }
