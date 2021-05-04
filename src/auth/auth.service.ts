@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../modules/user/user.service';
 import { User } from '../modules/user/entity/user.entity';
@@ -55,10 +55,7 @@ export class AuthService {
       };
     } catch (e) {
       this.logger.error(e);
-      return {
-        success: false,
-        error: e,
-      };
+      throw new HttpException(e, HttpStatus.UNAUTHORIZED);
     }
   }
 

@@ -22,7 +22,7 @@ window.onload = async () => {
     return
   }
 
-  const gameRooms = await response.json();
+  const { data: gameRooms} = await response.json();
   gameRooms.forEach(gameRoom => {
     const { id, title, maxNumberOfGamers, numberOfGamers, user } = gameRoom;
     addGameRoomItem(id, title, user.nickName, `${numberOfGamers}/${maxNumberOfGamers}`);
@@ -117,8 +117,6 @@ async function createRoom(title, maxNumberOfGamers) {
     return;
   }
 
-  const { id } = await response.json();
-  console.log(`id: ${id}`);
-  // fixme : 생성된 방으로 자동 입장
-  location.href = '/chatroom';
+  const { data: { id } } = await response.json();
+  location.href = `/game-room?id=${id}`;
 }
