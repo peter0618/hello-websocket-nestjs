@@ -41,7 +41,7 @@ async function onLoginButtonClicked(event) {
   }
 
   localStorage.setItem('accessToken', token);
-  location.href='/chatroom';
+  location.href='/waiting-room';
 }
 
 /**
@@ -49,7 +49,7 @@ async function onLoginButtonClicked(event) {
  */
 checkAccessToken().then((isTokenValid) => {
   if (isTokenValid){
-    return location.href='/chatroom';
+    return location.href='/waiting-room';
   }
   document.querySelector('#container').style.display = 'block';
 });
