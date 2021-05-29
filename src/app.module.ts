@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { EventsModule } from './events/events.module';
 import { AppController } from './app.controller';
 import { ConfigurationModule } from './configuration/configuration.module';
@@ -8,5 +8,6 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [EventsModule, ConfigurationModule, UserModule, AuthModule],
   controllers: [AppController],
+  providers: [Logger],
 })
 export class AppModule {}
