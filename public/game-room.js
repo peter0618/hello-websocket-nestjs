@@ -65,6 +65,24 @@ window.onload = async () => {
     return;
   }
 
+  // TODO : 인원수 늘리기 (numberOfGamers 를 늘리기)
+  const responseOfJoin = await fetch(`/api/game-room/${id}/join`, {
+    method: 'PUT',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + accessToken
+    },
+  });
+
+  const { data: { hasJoined }} = await responseOfJoin.json();
+  if (!hasJoined) {
+    alert('인원이 꽉 찼습니다.');
+    location.href='/waiting-room';
+    return;
+  }
+  console.log(`hasJoined : ${hasJoined}`);
+
+
   const responseOfMe = await fetch(`/api/me`, {
     method: 'GET',
     headers: {

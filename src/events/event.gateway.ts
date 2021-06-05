@@ -39,6 +39,9 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async onSayHi(@MessageBody() data, @ConnectedSocket() client) {
     this.logger.debug(`onSayHi(nickname: ${data.nickName}, roomId: ${data.roomId}, socket id: ${client.id})`);
     // client 객체에 닉네임 property 추가 (참여자 목록을 조회해오기 위함. fixme: this.server 에서 조회해오는 방법은 없을까...?)
+
+    // TODO : 연결을 시도했는데 인원수가 꽉차면 연걸을 끊는다.
+
     client.nickName = data.nickName;
 
     // client.rooms 에 roomId 가 있을 때도 있고 없을 때도 있어서 아예 매핑하여 저장을 해버렸음.
@@ -90,6 +93,9 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const nickNames = this.wsClients
       .filter(wsClient => wsClient.rooms.has(client.roomId))
       .map(wsClient => wsClient.nickName);
+
+    // TODO 1: 인원수 줄이기 (numberOfGamers 를 줄이기)
+    // TODO 2: 남은 사람들 없으면 방폭!
 
     const message = {
       nickName: client.nickName,
