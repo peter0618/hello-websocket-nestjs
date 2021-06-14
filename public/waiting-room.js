@@ -1,11 +1,30 @@
 // dom references
 let gameRoomContainer = document.querySelector('#game-room-container');
 
-// fixme : 서버로부터 실제 데이터를 조회하여 해당 아이템들을 동적으로 생성하도록 로직을 변경해야 합니다.
-addGameRoomItem(1, '초성게임 고수 환영', 'Peter', '4/4');
-addGameRoomItem(2, '초성게임 새벽반 @@', 'Koo', '2/3');
-addGameRoomItem(3, '아무나 오시게~~', 'Yobs', '6/10');
-addGameRoomItem(4, '초성게임 제발 초보만요 ㅠㅠ', 'Kate', '2/5');
+window.onload = async () => {
+  const accessToken = localStorage.getItem('accessToken');
+  const response = await fetch('/api/game-room', {
+    method: 'GET',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + accessToken
+    },
+  });
+
+  const status = response.status;
+  if(status === 401 || status === 403) {
+    alert('로그인이 필요합니다.');
+    localStorage.removeItem('accessToken');
+    location.href='/login';
+    return
+  }
+
+  const gameRooms = await response.json();
+  gameRooms.forEach(gameRoom => {
+    const { id, title, maxNumberOfGamers, numberOfGamers, user } = gameRoom;
+    addGameRoomItem(id, title, user.nickName, `${numberOfGamers}/${maxNumberOfGamers}`);
+  })
+}
 
 /**
  * 하나의 채팅방 리스트 아이템을 동적으로 생성합니다.
