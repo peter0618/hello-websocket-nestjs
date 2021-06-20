@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <h1>방 만들기</h1>
+    <div>
+      <input type='text' id='title' placeholder='방제목'>
+    </div>
+    <div>
+      <input type='text' id='maxNumberOfGamers' placeholder='최대 인원수'>
+    </div>
+    <button onclick='onConfirmButtonClicked()'>확인</button>
+    <script>
+      function onConfirmButtonClicked() {
+        const title = document.querySelector('#title').value;
+        const maxNumberOfGamers = document.querySelector('#maxNumberOfGamers').value;
+        window.opener.createRoom(title, parseInt(maxNumberOfGamers));
+        window.close();
+      }
+    </script>
+  </body>
+</html>
