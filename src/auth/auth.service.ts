@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../modules/user/user.service';
 import { User } from '../modules/user/entity/user.entity';
 import { validateHash } from '../common/utils/crypto.util';
+import { SignupReqDto } from './dto/auth.request.dto';
+import { CreateUserResDto } from '../modules/user/dto/user.response.dto';
 
 /**
  * 인증 관련 비즈니스 로직을 처리하는 서비스입니다.
@@ -58,5 +60,13 @@ export class AuthService {
         error: e,
       };
     }
+  }
+
+  /**
+   * 회원 가입 처리
+   * @param dto
+   */
+  signup(dto: SignupReqDto): Promise<CreateUserResDto> {
+    return this.userServer.create(dto);
   }
 }
