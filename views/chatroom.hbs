@@ -96,7 +96,7 @@
     socket.on(EventType.CHAT, function(data) {
       const {text, nickName, datetime} = data;
       const div = document.createElement('div');
-      div.innerText = `[${fromISOtoLocalTime(datetime)}] ${nickName} : ${text}`;
+      div.textContent = `[${fromISOtoLocalTime(datetime)}] ${nickName} : ${text}`;
       chatList.append(div);
       // 최근 채팅이 맨 아래에 위치하도록 스크롤
       chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
@@ -124,7 +124,7 @@
 
     const div = document.createElement('div');
     div.style.color = MY_CHAT_MESSAGE_COLOR;
-    div.innerText = `[${timeString}] ${nickName}(나) : ${text}`
+    div.textContent = `[${timeString}] ${nickName}(나) : ${text}`
     chatList.append(div);
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
@@ -142,7 +142,7 @@
     attendants.forEach((attendant) => {
       const div = document.createElement('div');
       div.style.color = ATTENDANTS_COLOR;
-      div.innerText = attendant;
+      div.textContent = attendant;
       attendantsList.append(div);
     });
   }
@@ -155,7 +155,7 @@
   function addNoticeMessage(messageColor, message) {
     const div = document.createElement('div');
     div.style.color = messageColor;
-    div.innerText = message;
+    div.textContent = message;
     chatList.append(div);
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
