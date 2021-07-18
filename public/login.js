@@ -15,7 +15,7 @@ passwordDom.onkeydown = async (event) => {
 signupButton.addEventListener('click', (event) => {
   // 클릭 이벤트 발생시 처리되는 기본동작을 막음
   event.preventDefault();
-  alert('아직 준비중입니다\n테스트 계정으로 접속해 주세요.\n\n아이디: test1234\n비밀번호: test1234');
+  location.href='/signup';
 })
 
 /**

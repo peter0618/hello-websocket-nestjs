@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * 로그인 요청 Dto
@@ -57,11 +57,4 @@ export class SignupReqDto {
   @IsString()
   @IsNotEmpty()
   email: string;
-
-  /**
-   * 비고
-   */
-  @IsString()
-  @IsOptional()
-  note?: string;
 }
