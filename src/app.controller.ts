@@ -6,10 +6,15 @@ export class AppController {
   constructor(private readonly configService: ConfigService) {}
 
   @Get()
+  @Render('index')
+  main() {
+    return null;
+  }
+
+  @Get('/login')
   @Render('login')
   login() {
-    const chatServerIP = this.configService.get<string>('CHAT_SERVER_IP');
-    return { chatServerIP };
+    return null;
   }
 
   @Get('/chatroom')

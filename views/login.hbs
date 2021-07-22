@@ -9,7 +9,7 @@
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
-    <div id="login">
+    <div id="login" style='display:none'>
       <div class="container">
         <div id="login-row" class="row justify-content-center align-items-center">
           <div id="login-column" class="col-md-6">
@@ -83,8 +83,9 @@
        */
       checkAccessToken().then((isTokenValid) => {
         if (isTokenValid){
-          location.href='/chatroom';
+          return location.href='/chatroom';
         }
+        document.querySelector('#login').style.display = 'block';
       });
 
       /**
@@ -112,7 +113,6 @@
         // console.log(payload);
         return true;
       }
-
     </script>
   </body>
 </html>
