@@ -16,6 +16,13 @@ export class UserService {
   private initUsers() {
     this.users = [
       {
+        id: 0,
+        name: 'Peter',
+        loginId: 'admin',
+        password: '$2b$10$wEUG0pu1QdqMErquCXx3XOVWyHDRYuk0wZBvmcRivFr9d/WiOTdPO', // 12345678
+        permissionGroupId: 1,
+      },
+      {
         id: 1,
         name: 'Peter',
         loginId: 'peter0618',

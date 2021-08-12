@@ -6,9 +6,8 @@ export class AppController {
   constructor(private readonly configService: ConfigService) {}
 
   @Get()
-  @Render('chatroom')
-  root() {
-    // TODO : change to login page
+  @Render('login')
+  login() {
     const chatServerIP = this.configService.get<string>('CHAT_SERVER_IP');
     return { chatServerIP };
   }

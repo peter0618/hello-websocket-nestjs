@@ -30,6 +30,13 @@ export class AuthController {
     };
   }
 
+  @Post('signup')
+  signup(@Body() dto) {
+    this.logger.debug(`signup(dto: ${JSON.stringify(dto)})`);
+    // TODO : 회원 가입 로직 구현 필요
+    return null;
+  }
+
   /**
    * jwt token 에 대한 validation 을 수행합니다.
    * (참고 : https://jwt.io/)

@@ -42,50 +42,74 @@
   const chatListContainer = document.getElementsByClassName('chat-list-container')[0];
   const attendantsList = document.getElementById('attendants-list');
 
-  // 닉네임 입력
-  const DEFAULT_NICKNAME = 'NONAME';
-  let nickName = prompt('닉네임 입력 : ',DEFAULT_NICKNAME);
-  if(nickName === '' || nickName === null){
-    nickName = DEFAULT_NICKNAME;
-  }
+  let nickName = null;
+  let socket = null;
 
-  // 소켓 클라이언트 객체 생성
-  const chatServerIP = '{{ chatServerIP }}';
-  let socket = io.connect(`http://${chatServerIP}:8080`);
+  // checkAccessToken().then((isTokenValid) => {
+  //   console.log(isTokenValid);
+  //   if (isTokenValid){
+  //     main();
+  //   } else {
+  //     location.href='/';
+  //   }
+  // });
 
-  socket.on('connect', () => {
-    console.log(`소켓 연결 성공(id: ${socket.id})`);
-    socket.emit(EventType.SAY_HI, {nickName});
-  });
+  (async () => {
+    const isTokenValid = await checkAccessToken();
+    console.log(isTokenValid);
+    if (isTokenValid){
+      main();
+    } else {
+      location.href='/';
+    }
+  })();
 
-  socket.on(EventType.SAY_HI, function(data){
-    const { nickName, attendants, datetime } = data;
-    addNoticeMessage(SAY_HI_MESSAGE_COLOR, `[${fromISOtoLocalTime(datetime)}] ${nickName} 님이 입장하셨습니다.`);
-    refreshAttendantsList(attendants);
-  });
+  function main() {
+    // 닉네임 입력
+    const DEFAULT_NICKNAME = 'NONAME';
+    nickName = prompt('닉네임 입력 : ',DEFAULT_NICKNAME);
+    if(nickName === '' || nickName === null){
+      nickName = DEFAULT_NICKNAME;
+    }
 
-  socket.on(EventType.SAY_BYE , function(data) {
-    const { nickName, attendants, datetime } = data;
-    addNoticeMessage(SAY_BYE_MESSAGE_COLOR, `[${fromISOtoLocalTime(datetime)}] ${nickName} 님이 퇴장하셨습니다.`);
-    refreshAttendantsList(attendants);
-  })
+    // 소켓 클라이언트 객체 생성
+    const chatServerIP = '{{ chatServerIP }}';
+    socket = io.connect(`http://${chatServerIP}:8080`);
 
-  socket.on(EventType.CHAT, function(data) {
-    const {text, nickName, datetime} = data;
-    const div = document.createElement('div');
-    div.innerText = `[${fromISOtoLocalTime(datetime)}] ${nickName} : ${text}`;
-    chatList.append(div);
-    // 최근 채팅이 맨 아래에 위치하도록 스크롤
-    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
-  });
+    socket.on('connect', () => {
+      console.log(`소켓 연결 성공(id: ${socket.id})`);
+      socket.emit(EventType.SAY_HI, {nickName});
+    });
+
+    socket.on(EventType.SAY_HI, function(data){
+      const { nickName, attendants, datetime } = data;
+      addNoticeMessage(SAY_HI_MESSAGE_COLOR, `[${fromISOtoLocalTime(datetime)}] ${nickName} 님이 입장하셨습니다.`);
+      refreshAttendantsList(attendants);
+    });
+
+    socket.on(EventType.SAY_BYE , function(data) {
+      const { nickName, attendants, datetime } = data;
+      addNoticeMessage(SAY_BYE_MESSAGE_COLOR, `[${fromISOtoLocalTime(datetime)}] ${nickName} 님이 퇴장하셨습니다.`);
+      refreshAttendantsList(attendants);
+    })
+
+    socket.on(EventType.CHAT, function(data) {
+      const {text, nickName, datetime} = data;
+      const div = document.createElement('div');
+      div.innerText = `[${fromISOtoLocalTime(datetime)}] ${nickName} : ${text}`;
+      chatList.append(div);
+      // 최근 채팅이 맨 아래에 위치하도록 스크롤
+      chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
+    });
 
 
-  // '메시지 전송' 버튼 클릭 OR 엔터 key 입력 시 onSendMessage() 메소드 호출
-  sendMessageButton.onclick = onSendMessage;
-  messageDom.onkeydown = (event) => {
-    // 한글 맨 뒤 한글자 더 입력되는 부분을 처리하기 위해 isComposing === false 조건 추가
-    if(event.code === 'Enter' && event.isComposing === false) {
-      onSendMessage();
+    // '메시지 전송' 버튼 클릭 OR 엔터 key 입력 시 onSendMessage() 메소드 호출
+    sendMessageButton.onclick = onSendMessage;
+    messageDom.onkeydown = (event) => {
+      // 한글 맨 뒤 한글자 더 입력되는 부분을 처리하기 위해 isComposing === false 조건 추가
+      if(event.code === 'Enter' && event.isComposing === false) {
+        onSendMessage();
+      }
     }
   }
 
@@ -146,6 +170,32 @@
   function fromISOtoLocalTime(datetime) {
     const [ localTime ] = new Date(datetime).toTimeString().split(' ');
     return localTime;
+  }
+
+  /**
+   * 토큰 존재유무 및 유효성 여부를 확인합니다.
+   * 토큰이 존재하지 않거나 유효하지 않으면 false 를 리턴합니다. (유효하지 않으면 지워버립니다.)
+   */
+  async function checkAccessToken() {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken){
+      return false;
+    }
+    const response = await fetch('/auth/token-validation', {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ token: accessToken })
+    });
+
+    const { success, payload } = await response.json();
+    // console.log(response);
+    // console.log(success);
+    if (!response.ok || !success) {
+      localStorage.removeItem('accessToken');
+      return false;
+    }
+    // console.log(payload);
+    return true;
   }
 
 </script>
