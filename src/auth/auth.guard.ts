@@ -4,10 +4,7 @@ import { UserService } from '../modules/user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const httpContext = context.switchToHttp();
@@ -25,8 +22,7 @@ export class AuthGuard implements CanActivate {
       }
 
       const payload = result.payload;
-      const { id, name, loginId, permissionGroupId } =
-        await this.userService.getById(payload.userId);
+      const { id, name, loginId, permissionGroupId } = await this.userService.getById(payload.userId);
 
       request.user = { id, name, loginId, permissionGroupId };
       return true;

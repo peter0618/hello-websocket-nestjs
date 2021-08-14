@@ -13,10 +13,7 @@ import { User } from '../modules/user/entity/user.entity';
 @Injectable()
 export class AuthService {
   private readonly logger: Logger = new Logger(this.constructor.name);
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly userServer: UserService,
-  ) {}
+  constructor(private readonly jwtService: JwtService, private readonly userServer: UserService) {}
 
   /**
    * 전달받은 로그인 아이디, 비밀번호가 유효한 정보인지 확인합니다.

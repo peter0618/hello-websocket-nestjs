@@ -26,7 +26,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(EventType.CHAT)
   onEvent(@MessageBody() data: ChatMessage, @ConnectedSocket() client: any) {
     // 나를 제외한 나머지 클라이언트에 채팅 메시지를 전파합니다.
-    this.wsClients.forEach((wsClient) => {
+    this.wsClients.forEach(wsClient => {
       if (wsClient !== client) {
         wsClient.emit(EventType.CHAT, data);
       }
@@ -35,9 +35,7 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage(EventType.SAY_HI)
   async onSayHi(@MessageBody() data, @ConnectedSocket() client) {
-    this.logger.debug(
-      `onSayHi(nickname: ${data.nickName}, socket id: ${client.id})`,
-    );
+    this.logger.debug(`onSayHi(nickname: ${data.nickName}, socket id: ${client.id})`);
     client.id;
     // client 객체에 닉네임 property 추가
     client.nickName = data.nickName;
@@ -45,8 +43,8 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const now = new Date();
     const [timeString] = now.toTimeString().split(' ');
 
-    const nickNames = this.wsClients.map((wsClient) => wsClient.nickName);
-    this.wsClients.forEach((wsClient) => {
+    const nickNames = this.wsClients.map(wsClient => wsClient.nickName);
+    this.wsClients.forEach(wsClient => {
       const message = {
         nickName: data.nickName,
         attendants: nickNames,
@@ -71,13 +69,13 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * @param client
    */
   handleDisconnect(client: any): any {
-    this.wsClients = this.wsClients.filter((weClient) => weClient !== client);
-    const nickNames = this.wsClients.map((wsClient) => wsClient.nickName);
+    this.wsClients = this.wsClients.filter(weClient => weClient !== client);
+    const nickNames = this.wsClients.map(wsClient => wsClient.nickName);
 
     const now = new Date();
     const [timeString] = now.toTimeString().split(' ');
 
-    this.wsClients.forEach((wsClient) => {
+    this.wsClients.forEach(wsClient => {
       const message = {
         nickName: client.nickName,
         attendants: nickNames,
