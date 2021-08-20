@@ -59,21 +59,21 @@
   });
 
   socket.on(EventType.SAY_HI, function(data){
-    const { nickName, attendants, timeString } = data;
-    addNoticeMessage(SAY_HI_MESSAGE_COLOR, `[${timeString}] ${nickName} 님이 입장하셨습니다.`);
+    const { nickName, attendants, datetime } = data;
+    addNoticeMessage(SAY_HI_MESSAGE_COLOR, `[${fromISOtoLocalTime(datetime)}] ${nickName} 님이 입장하셨습니다.`);
     refreshAttendantsList(attendants);
   });
 
   socket.on(EventType.SAY_BYE , function(data) {
-    const { nickName, attendants, timeString } = data;
-    addNoticeMessage(SAY_BYE_MESSAGE_COLOR, `[${timeString}] ${nickName} 님이 퇴장하셨습니다.`);
+    const { nickName, attendants, datetime } = data;
+    addNoticeMessage(SAY_BYE_MESSAGE_COLOR, `[${fromISOtoLocalTime(datetime)}] ${nickName} 님이 퇴장하셨습니다.`);
     refreshAttendantsList(attendants);
   })
 
   socket.on(EventType.CHAT, function(data) {
-    const {text, nickName, timeString} = data;
+    const {text, nickName, datetime} = data;
     const div = document.createElement('div');
-    div.innerText = `[${timeString}] ${nickName} : ${text}`;
+    div.innerText = `[${fromISOtoLocalTime(datetime)}] ${nickName} : ${text}`;
     chatList.append(div);
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
@@ -96,7 +96,7 @@
     let text = messageDom.value;
 
     const now = new Date();
-    const [ timeString ] = now.toTimeString().split(' ');
+    const [ timeString ] = now.toTimeString().split(' '); // toTimeString 은 로컬 타임으로 표시하기 때문에 이대로 채팅화면에 표시하면 됩니다.
 
     const div = document.createElement('div');
     div.style.color = MY_CHAT_MESSAGE_COLOR;
@@ -105,7 +105,7 @@
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
 
-    socket.emit(EventType.CHAT, {nickName, text, timeString});
+    socket.emit(EventType.CHAT, {nickName, text, datetime: now.toISOString()}); // 서버에 전달할 때는 iso 규격으로 전달합니다.
 
     messageDom.value = '';
   }
@@ -135,6 +135,17 @@
     chatList.append(div);
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
+  }
+
+  /**
+   * ISO 시간을 로컬 시간으로 변환합니다.
+   * 예) 2021-09-28T17:06:40.715Z -> 02:06:40 (한국 기준)
+   * @param datetime
+   * @returns {string}
+   */
+  function fromISOtoLocalTime(datetime) {
+    const [ localTime ] = new Date(datetime).toTimeString().split(' ');
+    return localTime;
   }
 
 </script>

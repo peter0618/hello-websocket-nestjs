@@ -40,15 +40,12 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // client 객체에 닉네임 property 추가
     client.nickName = data.nickName;
 
-    const now = new Date();
-    const [timeString] = now.toTimeString().split(' ');
-
     const nickNames = this.wsClients.map(wsClient => wsClient.nickName);
     this.wsClients.forEach(wsClient => {
       const message = {
         nickName: data.nickName,
         attendants: nickNames,
-        timeString,
+        datetime: new Date().toISOString(),
       };
       wsClient.emit(EventType.SAY_HI, message);
     });
@@ -72,14 +69,11 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.wsClients = this.wsClients.filter(weClient => weClient !== client);
     const nickNames = this.wsClients.map(wsClient => wsClient.nickName);
 
-    const now = new Date();
-    const [timeString] = now.toTimeString().split(' ');
-
     this.wsClients.forEach(wsClient => {
       const message = {
         nickName: client.nickName,
         attendants: nickNames,
-        timeString,
+        datetime: new Date().toISOString(),
       };
       wsClient.emit(EventType.SAY_BYE, message);
     });
