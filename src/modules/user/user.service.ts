@@ -62,4 +62,12 @@ export class UserService {
     );
     return isPasswordValid ? filteredUsers[0] : null;
   }
+
+  getAll() {
+    return this.users;
+  }
+
+  async getById(userId: number) {
+    return this.users.filter((user) => user.id === userId)[0];
+  }
 }

@@ -2,6 +2,7 @@ import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { LoginReqDto } from './dto/auth.request.dto';
 import { UserService } from '../modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
@@ -9,6 +10,7 @@ export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
   ) {}
 
   @Post('login')
@@ -46,16 +48,6 @@ export class AuthController {
    */
   @Post('token-validation')
   async validateJwtToken(@Body() reqDto) {
-    let result;
-    try {
-      result = await this.jwtService.verifyAsync(reqDto.token);
-      return result;
-    } catch (e) {
-      this.logger.error(e);
-      return {
-        success: false,
-        error: e,
-      };
-    }
+    return await this.authService.validateJwtToken(reqDto.token);
   }
 }

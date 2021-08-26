@@ -15,8 +15,10 @@ $ yarn install
 ## env variables
 ```
 CHAT_SERVER_IP=127.0.0.1
+JWT_SECRET=secretkey
+JWT_EXPIRES_IN=14d
 ```
-project root 폴더에 `.env` 파일을 생성하여 위와 같이 IP를 입력합니다.
+project root 폴더에 `.env` 파일을 생성하여 위 예시와 같이 환경변수를 선언합니다.
 
 ## Running the app
 
