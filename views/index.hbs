@@ -30,6 +30,7 @@
   const messageDom = document.getElementById('message');
   const chatList = document.getElementById('chatList');
   const sendMessageButton = document.getElementById("btn_send");
+  const chatListContainer = document.getElementsByClassName('chat-list-container')[0];
   // 1. 웹소켓 클라이언트 객체 생성
   const webSocket = new WebSocket(`ws://${chatServerIP}:8080`);
 
@@ -55,6 +56,8 @@
       div.innerText = `${nickName} : ${text}`;
     }
     chatList.append(div);
+    // 최근 채팅이 맨 아래에 위치하도록 스크롤
+    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
   }
 
   // 2-3) 연결 종료 이벤트 처리
@@ -82,6 +85,8 @@
     div.style.color = 'red';
     div.innerText = `${nickName}(나) : ${text}`
     chatList.append(div);
+    // 최근 채팅이 맨 아래에 위치하도록 스크롤
+    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
 
     if(webSocket.readyState === webSocket.OPEN) {
       webSocket.send(JSON.stringify({event: 'chat', data: {
