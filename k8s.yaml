@@ -1,0 +1,116 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peter-test-api
+  namespace: develop
+  labels:
+    app: peter-test-api
+  annotations:
+    keel.sh/policy: "regexp:^develop$"
+    keel.sh/trigger: poll
+    keel.sh/match-tag: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peter-test-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: peter-test-api
+    spec:
+      containers:
+        - name: peter-test
+          image: "gcr.io/dev-ocpp-319806/peter-test:develop"
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: 300m
+              memory: 500Mi
+            requests:
+              cpu: 200m
+              memory: 300Mi
+          readinessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: 3000
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          imagePullPolicy: Always
+
+---
+# server ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    beta.cloud.google.com/backend-config: '{"ports": {"80":"feathers-backendconfig"}}'
+  name: peter-test-api-clusterip
+  namespace: develop
+  labels:
+    app: peter-test-api
+spec:
+  type: LoadBalancer
+  sessionAffinity: None
+  selector:
+    app: peter-test-api
+  ports:
+    - name: api
+      protocol: TCP
+      port: 80
+      targetPort: 3000
+    - name: ws
+      port: 8080
+      targetPort: 8080
+
+
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: peter-test-api-ingress
+  namespace: develop
+  labels:
+    app: peter-test-api
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.org/websocket-services: ws-server
+    nginx.ingress.kubernetes.io/websocket-services: ws-server
+#    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+#    nginx.ingress.kubernetes.io/whitelist-source-range: "1.214.50.0/24,34.84.44.57/32"
+spec:
+  backend:
+    serviceName: peter-test-api-clusterip
+    servicePort: 80
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: peter-test-api-clusterip
+          servicePort: 80
+      - path: /ws/
+        backend:
+          serviceName: peter-test-api-clusterip
+          servicePort: 8080
+
