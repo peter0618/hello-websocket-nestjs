@@ -1,11 +1,15 @@
 import { Controller, Get, HttpCode, Render } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AppController {
+  constructor(private readonly configService: ConfigService) {}
+
   @Get()
   @Render('index')
   root() {
-    return { message: 'Hello world!' };
+    const chatServerIP = this.configService.get<string>('CHAT_SERVER_IP');
+    return { chatServerIP };
   }
 
   @Get('/api/healthcheck')

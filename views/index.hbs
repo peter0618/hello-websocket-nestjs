@@ -20,6 +20,7 @@
 
 </body>
 <script>
+  const chatServerIP = '{{ chatServerIP }}';
   const DEFAULT_NICKNAME = 'NONAME';
   let nickName = prompt('닉네임 입력 : ',DEFAULT_NICKNAME);
   if(nickName === '' || nickName === null){
@@ -30,7 +31,7 @@
   const chatList = document.getElementById('chatList');
   const sendMessageButton = document.getElementById("btn_send");
   // 1. 웹소켓 클라이언트 객체 생성
-  const webSocket = new WebSocket("ws://34.64.235.119:8080");
+  const webSocket = new WebSocket(`ws://${chatServerIP}:8080`);
 
   // 2. 웹소켓 이벤트 처리
   // 2-1) 연결 이벤트 처리
