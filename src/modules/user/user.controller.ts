@@ -11,7 +11,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get()
-  getAll(@CurrentUser() user: User) {
+  getAll(@CurrentUser() user?: User) {
     this.logger.debug(`user: ${JSON.stringify(user)}`);
     return this.userService.getAll();
   }

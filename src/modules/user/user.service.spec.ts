@@ -17,13 +17,41 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('User Validation', () => {
-    it('should validate user', async () => {
+  describe('Validate User', () => {
+    it('should return validated user', async () => {
       const loginReqDto: LoginReqDto = {
         loginId: 'peter0618',
         password: '1234qwer',
       };
-      expect(service.validate(loginReqDto)).toBe(true);
+      const user = await service.validate(loginReqDto);
+      expect(user).toBeDefined();
+      expect(user).toHaveProperty('loginId', 'peter0618');
+    });
+
+    it('should fail finding user with invalidate loginId', async () => {
+      const loginReqDto: LoginReqDto = {
+        loginId: 'badId',
+        password: '1234qwer',
+      };
+      expect(await service.validate(loginReqDto)).toBeNull();
+    });
+
+    it('should fail finding user with invalidate password', async () => {
+      const loginReqDto: LoginReqDto = {
+        loginId: 'peter0618',
+        password: '0000',
+      };
+      expect(await service.validate(loginReqDto)).toBeNull();
+    });
+  });
+
+  describe('Read User', () => {
+    it('should get user by validate id', async () => {
+      const user = await service.getById(1);
+      expect(user).toBeDefined();
+      expect(user).toHaveProperty('id', 1);
+      expect(user).toHaveProperty('name', 'Peter');
+      expect(user).toHaveProperty('loginId', 'peter0618');
     });
   });
 });
