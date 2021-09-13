@@ -9,17 +9,25 @@
 <h1>웹소켓 채팅 테스트</h1>
 
 <div class="chat-list-container" style="width: 500px; height: 300px; overflow:scroll; display:block;">
-  <div id="chatList">
-
-  </div>
+  <div id="chatList"></div>
 </div>
 
 <input type="text" id="message" style="width: 400px;">
 <button id="btn_send">메시지 전송</button>
 <!--<button id="btn_close">연결 끊기</button>-->
+<h3>참여자 목록</h3>
+<div id="attendants-list">
+</div>
 
 </body>
 <script>
+  let EventType;
+  (function (EventType) {
+    EventType["CHAT"] = "CHAT";
+    EventType["SAY_HI"] = "SAY_HI";
+    EventType["SAY_BYE"] = "SAY_BYE";
+  })(EventType || (EventType = {}));
+
   const chatServerIP = '{{ chatServerIP }}';
   const DEFAULT_NICKNAME = 'NONAME';
   let nickName = prompt('닉네임 입력 : ',DEFAULT_NICKNAME);
@@ -31,6 +39,7 @@
   const chatList = document.getElementById('chatList');
   const sendMessageButton = document.getElementById("btn_send");
   const chatListContainer = document.getElementsByClassName('chat-list-container')[0];
+  const attendantsList = document.getElementById('attendants-list');
   // 1. 웹소켓 클라이언트 객체 생성
   const webSocket = new WebSocket(`ws://${chatServerIP}:8080`);
 
@@ -45,14 +54,38 @@
   webSocket.onmessage = function (event) {
     // console.log(event);
     // console.log(`서버 웹소켓에게 받은 데이터: ${event.data}`);
-    const { nickName, text, eventType } = JSON.parse(event.data);
-    const div = document.createElement('div');
+    const { nickName, text, eventType, attendants } = JSON.parse(event.data);
+    if(!eventType) {
+      alert(`정의되지 않은 메시지가 수신되었습니다.`);
+      return;
+    }
 
-    if (eventType && eventType === 'sayHi') {
+    const div = document.createElement('div');
+    if (eventType === EventType.SAY_HI) {
       div.style.color = 'blue';
       div.innerText = `${nickName} 님이 입장하셨습니다.`;
-    } else {
-      // div.style.color = 'red';
+      // 참여자 구성원이 추가됨.
+      console.log(attendants);
+      attendantsList.innerHTML = '';
+      attendants.forEach((attendant) => {
+        const div = document.createElement('div');
+        div.style.color = 'blue';
+        div.innerText = attendant;
+        attendantsList.append(div);
+      });
+    } else if (eventType === EventType.SAY_BYE){
+      div.style.color = 'orange';
+      div.innerText = `${nickName} 님이 퇴장하셨습니다.`;
+      // 참여자 구성원이 제거됨.
+      console.log(attendants);
+      attendantsList.innerHTML = '';
+      attendants.forEach((attendant) => {
+        const div = document.createElement('div');
+        div.style.color = 'blue';
+        div.innerText = attendant;
+        attendantsList.append(div);
+      });
+    } else if (eventType === EventType.CHAT){
       div.innerText = `${nickName} : ${text}`;
     }
     chatList.append(div);
@@ -70,6 +103,7 @@
     console.log(event)
   }
 
+  // '메시지 전송' 버튼 클릭 OR 엔터 key 입력 시 onSendMessage() 메소드 호출
   sendMessageButton.onclick = onSendMessage;
   messageDom.onkeydown = (event) => {
     // 한글 맨 뒤 한글자 더 입력되는 부분을 처리하기 위해 isComposing === false 조건 추가
@@ -88,11 +122,8 @@
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
 
-    if(webSocket.readyState === webSocket.OPEN) {
-      webSocket.send(JSON.stringify({event: 'chat', data: {
-        nickName,text }
-      }
-      ));
+    if (webSocket.readyState === webSocket.OPEN) {
+      webSocket.send(JSON.stringify({event: 'chat', data: { nickName, text } }));
     } else {
       alert('연결된 웹소켓 서버가 없습니다.');
     }
