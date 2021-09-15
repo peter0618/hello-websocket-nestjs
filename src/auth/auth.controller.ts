@@ -6,16 +6,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { LoginReqDto } from './dto/auth.request.dto';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
   private readonly logger: Logger = new Logger(this.constructor.name);
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   async login(@Body() loginReqDto: LoginReqDto) {
@@ -31,8 +27,7 @@ export class AuthController {
     }
 
     // 아이디, 비밀번호가 유효하면 jwt 토큰을 생성하여 전달합니다.
-    const payload = { userName: user.name, userId: user.id };
-    const accessToken = await this.jwtService.signAsync(payload);
+    const accessToken = await this.authService.generateJwtToken(user);
     const message = '로그인에 성공하였습니다.';
     return {
       success: true,
