@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade" />
   <title>웹소켓</title>
 </head>
 <body>
@@ -50,7 +51,7 @@
 
   // 소켓 클라이언트 객체 생성
   const chatServerIP = '{{ chatServerIP }}';
-  let socket = io.connect(`http://${chatServerIP}:3000`);
+  let socket = io.connect(`http://${chatServerIP}:8080`);
 
   socket.on('connect', () => {
     console.log(`소켓 연결 성공(id: ${socket.id})`);
