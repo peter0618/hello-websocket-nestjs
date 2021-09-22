@@ -25,13 +25,10 @@ export class AuthGuard implements CanActivate {
       }
 
       const payload = result.payload;
-      const { id, name, loginId } = await this.userService.getById(
-        payload.userId,
-      );
+      const { id, name, loginId, permissionGroupId } =
+        await this.userService.getById(payload.userId);
 
-      // TODO : 권한 validation
-
-      request.user = { id, name, loginId };
+      request.user = { id, name, loginId, permissionGroupId };
       return true;
     }
     return false;

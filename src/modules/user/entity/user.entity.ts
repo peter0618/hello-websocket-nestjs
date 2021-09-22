@@ -18,4 +18,9 @@ export class User {
    * 비밀번호
    */
   password: string;
+
+  /**
+   * 사용자 권한 그룹
+   */
+  permissionGroupId: number;
 }
