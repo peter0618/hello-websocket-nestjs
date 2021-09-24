@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Render } from '@nestjs/common';
+import { Controller, Get, HttpCode, Redirect, Render } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Controller()
@@ -6,6 +6,7 @@ export class AppController {
   constructor(private readonly configService: ConfigService) {}
 
   @Get()
+  @Redirect('/chatroom', 301)
   @Render('index')
   root() {
     // TODO : change to login page
