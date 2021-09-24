@@ -12,7 +12,9 @@ import { EventType } from './event.constant';
 import { Server } from 'socket.io';
 import { ChatMessage } from './messages/chat.message';
 
-@WebSocketGateway()
+@WebSocketGateway(8080, {
+  cors: { origin: ['http://peterchat.duckdns.org', 'http://localhost:3000'] },
+})
 export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(this.constructor.name);
 
