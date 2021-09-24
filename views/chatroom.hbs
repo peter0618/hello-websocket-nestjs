@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>웹소켓</title>
+</head>
+<body>
+  <h1>웹소켓 채팅 테스트</h1>
+
+  <div class="chat-list-container" style="width: 500px; height: 300px; overflow:scroll; display:block;">
+    <div id="chatList"></div>
+  </div>
+
+  <input type="text" id="message" style="width: 400px;">
+  <button id="btn_send">메시지 전송</button>
+  <h3>참여자 목록</h3>
+  <div id="attendants-list">
+  </div>
+</body>
+<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+<script>
+  // EventType enum 선언
+  let EventType;
+  (function (EventType) {
+    EventType["CHAT"] = "CHAT";
+    EventType["SAY_HI"] = "SAY_HI";
+    EventType["SAY_BYE"] = "SAY_BYE";
+  })(EventType || (EventType = {}));
+
+  // const variables
+  const SAY_HI_MESSAGE_COLOR = 'blue';
+  const SAY_BYE_MESSAGE_COLOR = 'orange';
+  const MY_CHAT_MESSAGE_COLOR = 'red';
+  const ATTENDANTS_COLOR = 'blue';
+
+  // dom reference 매핑
+  const messageDom = document.getElementById('message');
+  const chatList = document.getElementById('chatList');
+  const sendMessageButton = document.getElementById("btn_send");
+  const chatListContainer = document.getElementsByClassName('chat-list-container')[0];
+  const attendantsList = document.getElementById('attendants-list');
+
+  // 닉네임 입력
+  const DEFAULT_NICKNAME = 'NONAME';
+  let nickName = prompt('닉네임 입력 : ',DEFAULT_NICKNAME);
+  if(nickName === '' || nickName === null){
+    nickName = DEFAULT_NICKNAME;
+  }
+
+  // 소켓 클라이언트 객체 생성
+  const chatServerIP = '{{ chatServerIP }}';
+  let socket = io.connect(`http://${chatServerIP}:3000`);
+
+  socket.on('connect', () => {
+    console.log(`소켓 연결 성공(id: ${socket.id})`);
+    socket.emit(EventType.SAY_HI, {nickName});
+  });
+
+  socket.on(EventType.SAY_HI, function(data){
+    const { nickName, attendants } = data;
+    addNoticeMessage(SAY_HI_MESSAGE_COLOR, `${nickName} 님이 입장하셨습니다.`);
+    refreshAttendantsList(attendants);
+  });
+
+  socket.on(EventType.SAY_BYE , function(data) {
+    const { nickName, attendants } = data;
+    addNoticeMessage(SAY_BYE_MESSAGE_COLOR, `${nickName} 님이 퇴장하셨습니다.`);
+    refreshAttendantsList(attendants);
+  })
+
+  socket.on(EventType.CHAT, function(data) {
+    const {text, nickName} = data;
+    const div = document.createElement('div');
+    div.innerText = `${nickName} : ${text}`;
+    chatList.append(div);
+    // 최근 채팅이 맨 아래에 위치하도록 스크롤
+    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
+  });
+
+
+  // '메시지 전송' 버튼 클릭 OR 엔터 key 입력 시 onSendMessage() 메소드 호출
+  sendMessageButton.onclick = onSendMessage;
+  messageDom.onkeydown = (event) => {
+    // 한글 맨 뒤 한글자 더 입력되는 부분을 처리하기 위해 isComposing === false 조건 추가
+    if(event.code === 'Enter' && event.isComposing === false) {
+      onSendMessage();
+    }
+  }
+
+  /**
+   * 입력한 메시지를 내 채팅창에도 노출시키고 상대방의 채팅창에 노출되도록 메시지를 소켓으로 전송합니다.
+   */
+  function onSendMessage() {
+    const text = messageDom.value;
+
+    const div = document.createElement('div');
+    div.style.color = MY_CHAT_MESSAGE_COLOR;
+    div.innerText = `${nickName}(나) : ${text}`
+    chatList.append(div);
+    // 최근 채팅이 맨 아래에 위치하도록 스크롤
+    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
+
+    socket.emit(EventType.CHAT, {nickName, text});
+
+    messageDom.value = '';
+  }
+
+  /**
+   * 참여자 목록 새로고침
+   */
+  function refreshAttendantsList(attendants) {
+    attendantsList.innerHTML = '';
+    attendants.forEach((attendant) => {
+      const div = document.createElement('div');
+      div.style.color = ATTENDANTS_COLOR;
+      div.innerText = attendant;
+      attendantsList.append(div);
+    });
+  }
+
+  /**
+   * 채팅창에 공지 메시지 노출
+   * @param messageColor
+   * @param message
+   */
+  function addNoticeMessage(messageColor, message) {
+    const div = document.createElement('div');
+    div.style.color = messageColor;
+    div.innerText = message;
+    chatList.append(div);
+    // 최근 채팅이 맨 아래에 위치하도록 스크롤
+    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
+  }
+
+</script>
+</html>
+

@@ -8,6 +8,14 @@ export class AppController {
   @Get()
   @Render('index')
   root() {
+    // TODO : change to login page
+    const chatServerIP = this.configService.get<string>('CHAT_SERVER_IP');
+    return { chatServerIP };
+  }
+
+  @Get('/chatroom')
+  @Render('chatroom')
+  chatroom() {
     const chatServerIP = this.configService.get<string>('CHAT_SERVER_IP');
     return { chatServerIP };
   }
