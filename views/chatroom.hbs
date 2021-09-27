@@ -59,21 +59,21 @@
   });
 
   socket.on(EventType.SAY_HI, function(data){
-    const { nickName, attendants } = data;
-    addNoticeMessage(SAY_HI_MESSAGE_COLOR, `${nickName} 님이 입장하셨습니다.`);
+    const { nickName, attendants, timeString } = data;
+    addNoticeMessage(SAY_HI_MESSAGE_COLOR, `[${timeString}] ${nickName} 님이 입장하셨습니다.`);
     refreshAttendantsList(attendants);
   });
 
   socket.on(EventType.SAY_BYE , function(data) {
-    const { nickName, attendants } = data;
-    addNoticeMessage(SAY_BYE_MESSAGE_COLOR, `${nickName} 님이 퇴장하셨습니다.`);
+    const { nickName, attendants, timeString } = data;
+    addNoticeMessage(SAY_BYE_MESSAGE_COLOR, `[${timeString}] ${nickName} 님이 퇴장하셨습니다.`);
     refreshAttendantsList(attendants);
   })
 
   socket.on(EventType.CHAT, function(data) {
-    const {text, nickName} = data;
+    const {text, nickName, timeString} = data;
     const div = document.createElement('div');
-    div.innerText = `${nickName} : ${text}`;
+    div.innerText = `[${timeString}] ${nickName} : ${text}`;
     chatList.append(div);
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
@@ -93,16 +93,19 @@
    * 입력한 메시지를 내 채팅창에도 노출시키고 상대방의 채팅창에 노출되도록 메시지를 소켓으로 전송합니다.
    */
   function onSendMessage() {
-    const text = messageDom.value;
+    let text = messageDom.value;
+
+    const now = new Date();
+    const [ timeString ] = now.toTimeString().split(' ');
 
     const div = document.createElement('div');
     div.style.color = MY_CHAT_MESSAGE_COLOR;
-    div.innerText = `${nickName}(나) : ${text}`
+    div.innerText = `[${timeString}] ${nickName}(나) : ${text}`
     chatList.append(div);
     // 최근 채팅이 맨 아래에 위치하도록 스크롤
     chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
 
-    socket.emit(EventType.CHAT, {nickName, text});
+    socket.emit(EventType.CHAT, {nickName, text, timeString});
 
     messageDom.value = '';
   }
