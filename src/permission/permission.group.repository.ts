@@ -15,20 +15,13 @@ export class PermissionGroupRepository {
       {
         id: 1,
         name: 'ADMIN',
-        permissions: [
-          Permission.CREATE_USER,
-          Permission.READ_USER,
-          Permission.UPDATE_USER,
-          Permission.DELETE_USER,
-        ],
+        permissions: [Permission.CREATE_USER, Permission.READ_USER, Permission.UPDATE_USER, Permission.DELETE_USER],
       },
       { id: 2, name: 'CUSTOMER', permissions: [Permission.READ_USER] },
     ];
   }
 
   getById(id: number) {
-    return this.permissionGroups.filter(
-      (permissionGroup) => permissionGroup.id === id,
-    )[0];
+    return this.permissionGroups.filter(permissionGroup => permissionGroup.id === id)[0];
   }
 }

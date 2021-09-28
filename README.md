@@ -17,6 +17,7 @@ $ yarn install
 CHAT_SERVER_IP=127.0.0.1
 JWT_SECRET=secretkey
 JWT_EXPIRES_IN=14d
+APP_PORT=3000
 ```
 project root 폴더에 `.env` 파일을 생성하여 위 예시와 같이 환경변수를 선언합니다.
 
