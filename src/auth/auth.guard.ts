@@ -22,9 +22,10 @@ export class AuthGuard implements CanActivate {
       }
 
       const payload = result.payload;
-      const { id, name, loginId, permissionGroupId } = await this.userService.getById(payload.userId);
+      // TODO : permissionGroupId 추가
+      const { id, name, loginId } = await this.userService.getById(payload.userId);
 
-      request.user = { id, name, loginId, permissionGroupId };
+      request.user = { id, name, loginId };
       return true;
     }
     return false;
