@@ -1,19 +1,92 @@
-body {
+html, body {
     margin: 0;
-    padding: 0;
-    background-color: #17a2b8;
-    height: 100vh;
+    height: 100%;
+    overflow: hidden;
 }
-#login .container #login-row #login-column #login-box {
-    margin-top: 120px;
-    max-width: 600px;
-    height: 320px;
+
+main {
+    height: 100%;
+    /*background: #17a2b8;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#container{
+    width: 350px;
+    height: 500px;
+    background: white;
     border: 1px solid #9C9C9C;
-    background-color: #EAEAEA;
+    display: none;
 }
-#login .container #login-row #login-column #login-box #login-form {
-    padding: 20px;
+
+#logo {
+    height: 130px;
+    line-height: 130px;
+    /*background: yellow;*/
+    font-size: 2.5rem;
+    font-family: fantasy;
 }
-#login .container #login-row #login-column #login-box #login-form #register-link {
-    margin-top: -85px;
+
+.input-layout {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.4rem;
+}
+
+input {
+    width: 250px;
+    height: 20px;
+    background: #fafafa;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+    padding: 9px 0 7px 8px;
+}
+
+.button-layout {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.4rem;
+}
+
+button {
+    width: 260px;
+    height:30px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background-color: #b2dffc;
+    color: white;
+}
+
+#login-button {
+    margin-top: 20px;
+}
+
+#signup-button {
+    margin-top: 6px;
+}
+
+.splitter-layout {
+    display: flex;
+    justify-content: center;
+    /*background-color: yellow;*/
+    align-items: center;
+}
+
+.splitter {
+    width: 103px;
+    height: 1px;
+    background-color: #dbdbdb;
+}
+
+#splitter-text {
+    margin: 0 16px;
+    font-size: 13px;
+}
+
+.bottom-layout {
+    display: flex;
+    justify-content: center;
+    color: #8e8e8e;
+    margin-top: 114px;
 }
