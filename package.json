@@ -32,6 +32,8 @@
     "@nestjs/typeorm": "^8.0.2",
     "@nestjs/websockets": "^8.0.6",
     "bcrypt": "^5.0.1",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "hbs": "^4.1.2",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",

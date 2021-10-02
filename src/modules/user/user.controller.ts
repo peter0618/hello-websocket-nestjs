@@ -1,41 +1,23 @@
-import { Controller, Delete, Get, Logger, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AuthGuard } from '../../auth/auth.guard';
-import { CurrentUser } from '../../common/decorators/current.user.decorator';
-import { User } from './entity/user.entity';
-import { RequiredPermission } from '../../permission/permissions.decorator';
-import { Permission } from '../../permission/permission.enum';
-import { PermissionGuard } from '../../permission/permission.guard';
+import { CreateUserReqDto } from './dto/user.request.dto';
+import { CreateUserResDto } from './dto/user.response.dto';
 
-@UseGuards(AuthGuard, PermissionGuard)
+// @UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   private readonly logger: Logger = new Logger(this.constructor.name);
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  @RequiredPermission(Permission.READ_USER)
-  getAll(@CurrentUser() user?: User) {
-    this.logger.debug(`user: ${JSON.stringify(user)}`);
-    return this.userService.getAll();
-  }
-
+  /**
+   * 사용자를 생성합니다.
+   * @param dto
+   */
   @Post()
-  @RequiredPermission(Permission.CREATE_USER)
-  create(@CurrentUser() user?: User) {
-    this.logger.debug(`create(user : ${JSON.stringify(user)})`);
-    return 'user is created';
-  }
-
-  @Put()
-  @RequiredPermission(Permission.UPDATE_USER)
-  update() {
-    return 'user is updated';
-  }
-
-  @Delete()
-  @RequiredPermission(Permission.DELETE_USER)
-  delete() {
-    return 'user is deleted';
+  create(@Body() dto: CreateUserReqDto): Promise<CreateUserResDto> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...rest } = dto; // 비밀번호 로깅을 제외시킵니다.
+    this.logger.debug(`create(dto: ${JSON.stringify(rest)})`);
+    return this.userService.create(dto);
   }
 }

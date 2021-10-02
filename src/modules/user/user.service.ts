@@ -1,60 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CreateUserReqDto } from './dto/user.request.dto';
+import { UserRepository } from './user.repository';
+import { UserMapper } from './mapper/user.mapper';
+import { CreateUserResDto } from './dto/user.response.dto';
+import { generateHash } from '../../common/utils/crypto.util';
 import { User } from './entity/user.entity';
 
 @Injectable()
 export class UserService {
-  users: User[];
+  constructor(private readonly userRepository: UserRepository, private readonly userMapper: UserMapper) {}
 
-  constructor() {
-    this.initUsers();
+  /**
+   * 사용자 Entity 를 생성하여 리턴합니다.
+   * @param dto
+   */
+  async create(dto: CreateUserReqDto): Promise<CreateUserResDto> {
+    // 1) 로그인 아이디 중복검사
+    if (await this.isLoginIdDuplicate(dto.loginId)) {
+      throw new HttpException(`이미 사용중인 로그인 아이디 입니다. (${dto.loginId})`, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    // 2) 비밀번호 암호화
+    const password = await generateHash(dto.password);
+
+    // 3) 사용자 생성
+    const userEntity = await this.userRepository.save(Object.assign(dto, { password }));
+    return this.userMapper.toCreateUserResponseDto(userEntity);
   }
 
   /**
-   * initialize test users
-   * @private
+   * 로그인 아이디 중복을 확인합니다.
+   * @param loginId
    */
-  private initUsers() {
-    this.users = [
-      {
-        id: 0,
-        name: 'Peter',
-        loginId: 'admin',
-        password: '$2b$10$wEUG0pu1QdqMErquCXx3XOVWyHDRYuk0wZBvmcRivFr9d/WiOTdPO', // 12345678
-        permissionGroupId: 1,
-      },
-      {
-        id: 1,
-        name: 'Peter',
-        loginId: 'peter0618',
-        password: '$2b$10$F4M6hHaSZsKRTAtJUt.pAuHfac4R5VVb6.QTM/rgWk2TjDcCH5w6C', // 1234qwer
-        permissionGroupId: 1,
-      },
-      {
-        id: 2,
-        name: 'Grace',
-        loginId: 'grace8701',
-        password: '$2b$10$wEUG0pu1QdqMErquCXx3XOVWyHDRYuk0wZBvmcRivFr9d/WiOTdPO', // 12345678
-        permissionGroupId: 1,
-      },
-      {
-        id: 3,
-        name: 'Eunsung',
-        loginId: 'eunsung0623',
-        password: '$2b$10$i3EeI/eIu7eONqcZvIA4xeJi2oSoE0valxWlILlD.44E9GyYA7a52', // 0987qwer
-        permissionGroupId: 2,
-      },
-    ];
+  async isLoginIdDuplicate(loginId: string): Promise<boolean> {
+    const count = await this.userRepository.count({ loginId });
+    return count > 0;
   }
 
-  getAll() {
-    return this.users;
+  /**
+   * 사용자를 유일식별자로 조회합니다.
+   * @param userId
+   */
+  getById(userId: number): Promise<User> {
+    return this.userRepository.findOne({ id: userId });
   }
 
-  async getByLoginId(loginId: string): Promise<User> {
-    return this.users.filter(user => user.loginId === loginId)[0];
-  }
-
-  async getById(userId: number) {
-    return this.users.filter(user => user.id === userId)[0];
+  /**
+   * 사용자를 로그인 아이디로 조회합니다.
+   * @param loginId
+   */
+  getByLoginId(loginId: string): Promise<User> {
+    return this.userRepository.findOne({ loginId });
   }
 }
