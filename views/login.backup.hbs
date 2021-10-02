@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel='stylesheet' href='login.css'>
+    <title>Peter Chat</title>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    <div id="login" style='display:none'>
+      <div class="container">
+        <div id="login-row" class="row justify-content-center align-items-center">
+          <div id="login-column" class="col-md-6">
+            <div id="login-box" class="col-md-12">
+              <form id="login-form" class="form">
+                <h3 class="text-center text-info">Login</h3>
+                <div class="form-group">
+                  <label for="username" class="text-info">User ID:</label><br>
+                  <input type="text" name="username" id="userid" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="password" class="text-info">Password:</label><br>
+                  <input type="password" name="password" id="password" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>
+                  <input type="submit" id='loginButton' class="btn btn-info btn-md" value="login">
+<!--                  <input type="submit" id='signupButton' class="btn btn-info btn-md" value="signup">-->
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // dom reference
+      const loginButton = document.getElementById('loginButton');
+      // const signupButton = document.getElementById('signupButton');
+      const useridDom = document.getElementById('userid');
+      const passwordDom = document.getElementById('password');
+
+      // signupButton.addEventListener('click', async (event) => {
+      //   // 클릭 이벤트 발생시 처리되는 기본동작을 막음
+      //   event.preventDefault();
+      //
+      //   const userId = useridDom.value;
+      //   const password = passwordDom.value;
+      //
+      //   const response = await fetch('/auth/signup', {
+      //     method: "POST",
+      //     headers: {"Content-Type": "application/json"},
+      //     body: JSON.stringify({userId, password})
+      //   });
+      //   console.log(response);
+      // })
+
+      loginButton.addEventListener('click', async (event) => {
+        // 클릭 이벤트 발생시 처리되는 기본동작을 막음
+        event.preventDefault();
+        const loginId = useridDom.value;
+        const password = passwordDom.value;
+
+        const response = await fetch('/auth/login', {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ loginId, password })
+        })
+
+        const { success, token } = await response.json();
+        if (!(response.ok || success)) {
+           return alert('로그인 실패!!');
+        }
+
+        localStorage.setItem('accessToken', token);
+        location.href='/chatroom';
+      })
+
+      /**
+       * 토큰의 유효성 검증이 통과되면 /chatroom 으로 redirect 합니다.
+       */
+      checkAccessToken().then((isTokenValid) => {
+        if (isTokenValid){
+          return location.href='/chatroom';
+        }
+        document.querySelector('#login').style.display = 'block';
+      });
+
+      /**
+       * 토큰 존재유무 및 유효성 여부를 확인합니다.
+       * 토큰이 존재하지 않거나 유효하지 않으면 false 를 리턴합니다. (유효하지 않으면 지워버립니다.)
+       */
+      async function checkAccessToken() {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken){
+          return false;
+        }
+        const response = await fetch('/auth/token-validation', {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ token: accessToken })
+        });
+
+        const { success, payload } = await response.json();
+        // console.log(response);
+        // console.log(success);
+        if (!response.ok || !success) {
+          localStorage.removeItem('accessToken');
+          return false;
+        }
+        // console.log(payload);
+        return true;
+      }
+    </script>
+  </body>
+</html>
