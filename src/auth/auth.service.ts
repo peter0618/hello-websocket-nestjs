@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../modules/user/user.service';
-import { validateHash } from '../common/utils/crypto.util';
 import { User } from '../modules/user/entity/user.entity';
 
 /**
@@ -21,11 +20,13 @@ export class AuthService {
    * @param loginId
    * @param password
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async validateUser(loginId: string, password: string) {
-    const user = await this.userServer.getByLoginId(loginId);
-    if (user && (await validateHash(password, user.password))) {
-      return user;
-    }
+    // fixme
+    // const user = await this.userServer.getByLoginId(loginId);
+    // if (user && (await validateHash(password, user.password))) {
+    //   return user;
+    // }
     return null;
   }
 
