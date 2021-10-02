@@ -3,141 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>웹소켓</title>
+  <title>Peter Chat</title>
+  <script>
+
+    (async () => {
+      const isTokenValid = await checkAccessToken();
+      console.log(isTokenValid);
+      if (isTokenValid){
+        location.href='/chatroom'
+      } else {
+        location.href='/login';
+      }
+    })();
+
+    /**
+     * 토큰 존재유무 및 유효성 여부를 확인합니다.
+     * 토큰이 존재하지 않거나 유효하지 않으면 false 를 리턴합니다. (유효하지 않으면 지워버립니다.)
+     */
+    async function checkAccessToken() {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken){
+        return false;
+      }
+      const response = await fetch('/auth/token-validation', {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ token: accessToken })
+      });
+
+      const { success } = await response.json();
+      if (!response.ok || !success) {
+        localStorage.removeItem('accessToken');
+        return false;
+      }
+      return true;
+    }
+  </script>
 </head>
 <body>
-<h1>웹소켓 채팅 테스트</h1>
-
-<div class="chat-list-container" style="width: 500px; height: 300px; overflow:scroll; display:block;">
-  <div id="chatList"></div>
-</div>
-
-<input type="text" id="message" style="width: 400px;">
-<button id="btn_send">메시지 전송</button>
-<!--<button id="btn_close">연결 끊기</button>-->
-<h3>참여자 목록</h3>
-<div id="attendants-list">
-</div>
-
 </body>
-<script>
-  let EventType;
-  (function (EventType) {
-    EventType["CHAT"] = "CHAT";
-    EventType["SAY_HI"] = "SAY_HI";
-    EventType["SAY_BYE"] = "SAY_BYE";
-  })(EventType || (EventType = {}));
-
-  const chatServerIP = '{{ chatServerIP }}';
-  const DEFAULT_NICKNAME = 'NONAME';
-  let nickName = prompt('닉네임 입력 : ',DEFAULT_NICKNAME);
-  if(nickName === '' || nickName === null){
-    nickName = DEFAULT_NICKNAME;
-  }
-
-  const messageDom = document.getElementById('message');
-  const chatList = document.getElementById('chatList');
-  const sendMessageButton = document.getElementById("btn_send");
-  const chatListContainer = document.getElementsByClassName('chat-list-container')[0];
-  const attendantsList = document.getElementById('attendants-list');
-  // 1. 웹소켓 클라이언트 객체 생성
-  const webSocket = new WebSocket(`ws://${chatServerIP}:8080`);
-
-  // 2. 웹소켓 이벤트 처리
-  // 2-1) 연결 이벤트 처리
-  webSocket.onopen = () => {
-    console.log("웹소켓서버와 연결 성공");
-    webSocket.send(JSON.stringify({event: 'sayHi', data: {nickName} }));
-  };
-
-  // 2-2) 메세지 수신 이벤트 처리
-  webSocket.onmessage = function (event) {
-    // console.log(event);
-    // console.log(`서버 웹소켓에게 받은 데이터: ${event.data}`);
-    const { nickName, text, eventType, attendants } = JSON.parse(event.data);
-    if(!eventType) {
-      alert(`정의되지 않은 메시지가 수신되었습니다.`);
-      return;
-    }
-
-    const div = document.createElement('div');
-    if (eventType === EventType.SAY_HI) {
-      div.style.color = 'blue';
-      div.innerText = `${nickName} 님이 입장하셨습니다.`;
-      // 참여자 구성원이 추가됨.
-      console.log(attendants);
-      attendantsList.innerHTML = '';
-      attendants.forEach((attendant) => {
-        const div = document.createElement('div');
-        div.style.color = 'blue';
-        div.innerText = attendant;
-        attendantsList.append(div);
-      });
-    } else if (eventType === EventType.SAY_BYE){
-      div.style.color = 'orange';
-      div.innerText = `${nickName} 님이 퇴장하셨습니다.`;
-      // 참여자 구성원이 제거됨.
-      console.log(attendants);
-      attendantsList.innerHTML = '';
-      attendants.forEach((attendant) => {
-        const div = document.createElement('div');
-        div.style.color = 'blue';
-        div.innerText = attendant;
-        attendantsList.append(div);
-      });
-    } else if (eventType === EventType.CHAT){
-      div.innerText = `${nickName} : ${text}`;
-    }
-    chatList.append(div);
-    // 최근 채팅이 맨 아래에 위치하도록 스크롤
-    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
-  }
-
-  // 2-3) 연결 종료 이벤트 처리
-  webSocket.onclose = function (event) {
-    console.log(`서버 웹소켓에게 받은 데이터: ${event.data}`);
-  }
-
-  // 2-4) 에러 발생 이벤트 처리
-  webSocket.onerror = function(event){
-    console.log(event)
-  }
-
-  // '메시지 전송' 버튼 클릭 OR 엔터 key 입력 시 onSendMessage() 메소드 호출
-  sendMessageButton.onclick = onSendMessage;
-  messageDom.onkeydown = (event) => {
-    // 한글 맨 뒤 한글자 더 입력되는 부분을 처리하기 위해 isComposing === false 조건 추가
-    if(event.code === 'Enter' && event.isComposing === false) {
-      onSendMessage();
-    }
-  }
-
-  function onSendMessage() {
-    const text = messageDom.value;
-
-    const div = document.createElement('div');
-    div.style.color = 'red';
-    div.innerText = `${nickName}(나) : ${text}`
-    chatList.append(div);
-    // 최근 채팅이 맨 아래에 위치하도록 스크롤
-    chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
-
-    if (webSocket.readyState === webSocket.OPEN) {
-      webSocket.send(JSON.stringify({event: 'chat', data: { nickName, text } }));
-    } else {
-      alert('연결된 웹소켓 서버가 없습니다.');
-    }
-    messageDom.value = '';
-  }
-
-  // document.getElementById("btn_close").onclick = function() {
-  //   if(webSocket.readyState === webSocket.OPEN) {
-  //     webSocket.close();
-  //   } else {
-  //     alert("연결된 웹소켓 서버가 없습니다.");
-  //   }
-  // }
-
-</script>
 </html>
 

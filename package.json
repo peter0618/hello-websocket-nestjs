@@ -29,12 +29,15 @@
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/platform-socket.io": "^8.0.6",
     "@nestjs/platform-ws": "^8.0.6",
+    "@nestjs/typeorm": "^8.0.2",
     "@nestjs/websockets": "^8.0.6",
     "bcrypt": "^5.0.1",
     "hbs": "^4.1.2",
+    "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.6"
+    "rxjs": "^7.1.5",
+    "typeorm": "^0.2.37"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
