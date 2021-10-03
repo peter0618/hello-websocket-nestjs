@@ -1,5 +1,5 @@
 import { Body, Controller, Logger, Post, UnauthorizedException } from '@nestjs/common';
-import { LoginReqDto } from './dto/auth.request.dto';
+import { LoginReqDto, SignupReqDto } from './dto/auth.request.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -31,10 +31,11 @@ export class AuthController {
   }
 
   @Post('signup')
-  signup(@Body() dto) {
-    this.logger.debug(`signup(dto: ${JSON.stringify(dto)})`);
-    // TODO : 회원 가입 로직 구현 필요
-    return null;
+  signup(@Body() dto: SignupReqDto) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...rest } = dto; // 비밀번호 로깅을 제외시킵니다.
+    this.logger.debug(`create(dto: ${JSON.stringify(rest)})`);
+    return this.authService.signup(dto);
   }
 
   /**

@@ -1,0 +1,70 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+main {
+    height: 100%;
+    /*background: #17a2b8;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#container{
+    width: 350px;
+    height: 500px;
+    background: white;
+    border: 1px solid #9C9C9C;
+    /*display: none;*/
+}
+
+#logo {
+    height: 130px;
+    line-height: 130px;
+    /*background: yellow;*/
+    font-size: 2.5rem;
+    font-family: fantasy;
+}
+
+.input-layout {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.4rem;
+}
+
+input {
+    width: 250px;
+    height: 20px;
+    background: #fafafa;
+    border: 1px solid #dbdbdb;
+    border-radius: 3px;
+    padding: 9px 0 7px 8px;
+}
+
+.button-layout {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.4rem;
+}
+
+button {
+    width: 260px;
+    height:30px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background-color: #b2dffc;
+    color: white;
+}
+
+#signup-button {
+    margin-top: 20px;
+}
+
+.bottom-layout {
+    display: flex;
+    justify-content: center;
+    color: #8e8e8e;
+    margin-top: 140px;
+}

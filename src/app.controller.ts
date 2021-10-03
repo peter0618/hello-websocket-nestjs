@@ -17,6 +17,12 @@ export class AppController {
     return null;
   }
 
+  @Get('/signup')
+  @Render('signup')
+  signup() {
+    return null;
+  }
+
   @Get('/chatroom')
   @Render('chatroom')
   chatroom() {
