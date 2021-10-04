@@ -23,6 +23,12 @@ export class AppController {
     return null;
   }
 
+  @Get('/waiting-room')
+  @Render('waiting-room')
+  waitingRoom() {
+    return null;
+  }
+
   @Get('/chatroom')
   @Render('chatroom')
   chatroom() {

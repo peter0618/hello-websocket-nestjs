@@ -1,0 +1,107 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+header {
+    background-color: #205d80;
+    height: 45px;
+    display: flex;
+    /*justify-content: center;*/ /* 수평 중앙 정렬 */
+    align-items: center;
+}
+
+header .head-text {
+    margin-left: 20px;
+    color: white;
+}
+
+main {
+    background-color: #f0f2f7;
+    height: calc(100% - 90px);
+    display : -webkit-flex;
+    display : flex;
+}
+
+main > .left-layout {
+    background-color: white;
+    -webkit-flex : 1;
+    flex : 1;
+    padding: 10px;
+}
+
+main > .left-layout > #game-room-container {
+    height: 600px;
+    border: 1px solid dodgerblue;
+}
+
+#column-header {
+    background-color: cornflowerblue;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: white;
+}
+
+.room-number {
+    width: 60px;
+}
+
+.room-title {
+    width: 700px;
+}
+
+.room-host {
+    width: 110px;
+}
+
+.room-member-count {
+    width: 80px;
+}
+
+.game-room {
+    background-color: white;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: black;
+}
+
+.join-button {
+    width: 75px;
+    height: 25px;
+}
+
+
+main > .right-layout {
+    /*background-color: yellow;*/
+    width : 300px;
+    padding: 10px;
+}
+
+#make-room-button {
+    height: 40px;
+    width: 300px;
+    background-color: cornflowerblue;
+    border: none;
+    color: white;
+}
+
+#make-room-button:hover{background-color:#3b72d6;}
+#make-room-button:active{background-color:#8aaae6;}
+
+
+footer {
+    background-color: #f0f2f7;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer > .bottom-text {
+    color: #8e8e8e;
+}
