@@ -29,12 +29,12 @@ async function onSignupButtonClicked(event) {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ name, nickName, loginId: userid, password, email})
-  })
+  });
 
   const statusCode = response.status
   // 201 은 성공. 나머지(400: validation error, 406: 이미 사용중인 로그인 아이디 ) 는 실패
   if (statusCode === 201) {
-    alert('축하드립니다. 회원가입에 성공하셨습니다!\n가입하신 접속정보로 로그인하세요^^');ㄴ
+    alert('축하드립니다. 회원가입에 성공하셨습니다!\n가입하신 접속정보로 로그인하세요^^');
     location.href='/login'
     return;
   }
