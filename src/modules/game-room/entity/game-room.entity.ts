@@ -23,7 +23,7 @@ export class GameRoom {
    */
   @OneToOne(() => User)
   @JoinColumn()
-  createdBy: User;
+  user: User;
 
   /**
    * 최대 인원 수
