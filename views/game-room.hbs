@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Petter Chatter</title>
+    <script>const chatServerIP = '{{ chatServerIP }}';</script>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js" defer></script>
     <script src='/game-room.js' defer></script>
   </head>
   <body>
     <header>
-      <h1>Game Room</h1>
+      <h1>Petter Chatter</h1>
     </header>
     <main>
-      채팅화면
+      <div class="chat-list-container" style="width: 100%; height: 300px; overflow:scroll; display:block;">
+        <div id="chatList"></div>
+      </div>
+      <input type="text" id="message" style="width: 75%;">
+      <button id="btn_send">메시지 전송</button>
     </main>
+      <h3>참여자 목록</h3>
+      <div id="attendants-list"></div>
     <footer>
-      footer
+
     </footer>
   </body>
 </html>

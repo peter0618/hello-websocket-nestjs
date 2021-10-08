@@ -35,14 +35,13 @@ async function onLoginButtonClicked(event) {
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ loginId, password })
   })
-
-  const { success, token } = await response.json();
+  const { success, data: {token} } = await response.json();
   if (!(response.ok || success)) {
     return alert('로그인 실패!!');
   }
 
   localStorage.setItem('accessToken', token);
-  location.href='/chatroom';
+  location.href='/waiting-room';
 }
 
 /**
@@ -50,7 +49,7 @@ async function onLoginButtonClicked(event) {
  */
 checkAccessToken().then((isTokenValid) => {
   if (isTokenValid){
-    return location.href='/chatroom';
+    return location.href='/waiting-room';
   }
   document.querySelector('#container').style.display = 'block';
 });

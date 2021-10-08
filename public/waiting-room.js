@@ -19,10 +19,10 @@ window.onload = async () => {
     alert('로그인이 필요합니다.');
     localStorage.removeItem('accessToken');
     location.href='/login';
-    return
+    return;
   }
 
-  const gameRooms = await response.json();
+  const { data: gameRooms} = await response.json();
   gameRooms.forEach(gameRoom => {
     const { id, title, maxNumberOfGamers, numberOfGamers, user } = gameRoom;
     addGameRoomItem(id, title, user.nickName, `${numberOfGamers}/${maxNumberOfGamers}`);
@@ -60,8 +60,7 @@ function addGameRoomItem(id, title, createdBy, memberRatio){
   joinButton.textContent = '참여';
   joinButton.className = 'join-button';
   joinButton.addEventListener('click', (event) => {
-    console.log(`${id}!! clicked!!`);
-    // TODO : "참여버튼" 클릭시 채팅방으로 입장하는 로직 구현이 필요합니다.
+    location.href=`/game-room?id=${id}`;
   })
 
   const borderLine = document.createElement('div');
@@ -117,8 +116,6 @@ async function createRoom(title, maxNumberOfGamers) {
     return;
   }
 
-  const { id } = await response.json();
-  console.log(`id: ${id}`);
-  // fixme : 생성된 방으로 자동 입장
-  location.href = '/chatroom';
+  const { data: { id } } = await response.json();
+  location.href = `/game-room?id=${id}`;
 }

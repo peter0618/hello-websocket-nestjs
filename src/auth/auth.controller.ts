@@ -24,7 +24,6 @@ export class AuthController {
     const accessToken = await this.authService.generateJwtToken(user);
     const message = '로그인에 성공하였습니다.';
     return {
-      success: true,
       message,
       token: accessToken,
     };
