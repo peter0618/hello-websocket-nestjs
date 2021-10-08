@@ -17,6 +17,7 @@
       function onConfirmButtonClicked() {
         const title = document.querySelector('#title').value;
         const maxNumberOfGamers = document.querySelector('#maxNumberOfGamers').value;
+        // TODO : maxNumberOfGamers 는 number 이어야 합니다. validation 이 필요합니다.
         window.opener.createRoom(title, parseInt(maxNumberOfGamers));
         window.close();
       }

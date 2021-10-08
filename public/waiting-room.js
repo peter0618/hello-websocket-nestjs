@@ -41,23 +41,23 @@ function addGameRoomItem(id, title, createdBy, memberRatio){
   gameRoom.className = 'game-room';
 
   const roomNumber = document.createElement('div');
-  roomNumber.innerText = id;
+  roomNumber.textContent = id;
   roomNumber.className = 'room-number';
 
   const roomTitle = document.createElement('div');
-  roomTitle.innerText = title;
+  roomTitle.textContent = title;
   roomTitle.className = 'room-title';
 
   const roomHost = document.createElement('div');
-  roomHost.innerText = createdBy;
+  roomHost.textContent = createdBy;
   roomHost.className = 'room-host';
 
   const roomMemberCount = document.createElement('div');
-  roomMemberCount.innerText = memberRatio;
+  roomMemberCount.textContent = memberRatio;
   roomMemberCount.className = 'room-member-count';
 
   const joinButton = document.createElement('button');
-  joinButton.innerText = '참여';
+  joinButton.textContent = '참여';
   joinButton.className = 'join-button';
   joinButton.addEventListener('click', (event) => {
     console.log(`${id}!! clicked!!`);

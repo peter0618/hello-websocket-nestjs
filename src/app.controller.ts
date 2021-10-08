@@ -29,6 +29,12 @@ export class AppController {
     return null;
   }
 
+  @Get('/game-room')
+  @Render('game-room')
+  gameRoom() {
+    return null;
+  }
+
   @Get('/chatroom')
   @Render('chatroom')
   chatroom() {
