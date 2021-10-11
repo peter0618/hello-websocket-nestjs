@@ -22,6 +22,7 @@ const attendantsList = document.getElementById('attendants-list');
 let myNickName = null;
 let myId = null;
 let socket = null;
+let roomId = null;
 
 
 
@@ -31,6 +32,7 @@ window.onload = async () => {
   if (!id) {
     location.href='/waiting-room';
   }
+  roomId = id;
   const accessToken = localStorage.getItem('accessToken');
   const response = await fetch(`/api/game-room/${id}`, {
     method: 'GET',
@@ -63,6 +65,24 @@ window.onload = async () => {
     return;
   }
 
+  // TODO : 인원수 늘리기 (numberOfGamers 를 늘리기)
+  const responseOfJoin = await fetch(`/api/game-room/${id}/join`, {
+    method: 'PUT',
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + accessToken
+    },
+  });
+
+  const { data: { hasJoined }} = await responseOfJoin.json();
+  if (!hasJoined) {
+    alert('인원이 꽉 찼습니다.');
+    location.href='/waiting-room';
+    return;
+  }
+  console.log(`hasJoined : ${hasJoined}`);
+
+
   const responseOfMe = await fetch(`/api/me`, {
     method: 'GET',
     headers: {
@@ -86,7 +106,7 @@ function main(){
 
   socket.on('connect', () => {
     console.log(`소켓 연결 성공(id: ${socket.id})`);
-    socket.emit(EventType.SAY_HI, {nickName: myNickName});
+    socket.emit(EventType.SAY_HI, { nickName: myNickName, roomId });
   });
 
   socket.on(EventType.SAY_HI, function(data){
@@ -151,7 +171,7 @@ function onSendMessage() {
   // 최근 채팅이 맨 아래에 위치하도록 스크롤
   chatListContainer.scrollTo(0, chatListContainer.scrollHeight);
 
-  socket.emit(EventType.CHAT, {nickName: myNickName, text, datetime: now.toISOString()}); // 서버에 전달할 때는 iso 규격으로 전달합니다.
+  socket.emit(EventType.CHAT, { roomId, nickName: myNickName, text, datetime: now.toISOString() }); // 서버에 전달할 때는 iso 규격으로 전달합니다.
 
   messageDom.value = '';
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { GameRoomService } from './game-room.service';
 import { CreateGameRoomReqDto } from './dto/gaem-room.request.dto';
 import { AuthGuard } from '../../auth/auth.guard';
@@ -42,5 +42,17 @@ export class GameRoomController {
   findById(@CurrentUser() user: User, @Param('id', ParseIntPipe) id: number) {
     this.logger.debug(`findById(user: ${JSON.stringify(user)}, id: ${id})`);
     return this.gameRoomService.findById(id);
+  }
+
+  /**
+   * 특정 채팅방에 참여 인원수를 늘립니다.
+   * @param user
+   * @param id
+   * @param dto
+   */
+  @Put(':id/join')
+  join(@CurrentUser() user: User, @Param('id', ParseIntPipe) id: number, @Body() dto) {
+    this.logger.debug(`patch(user: ${JSON.stringify(user)}, id: ${id}, dto: ${JSON.stringify(dto)})`);
+    return this.gameRoomService.join(id);
   }
 }
