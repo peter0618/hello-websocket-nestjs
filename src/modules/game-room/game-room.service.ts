@@ -83,4 +83,49 @@ export class GameRoomService {
       await runner.release();
     }
   }
+
+  /**
+   * 채팅방 참여자의 퇴장 이벤트에 대한 비즈니스 로직을 처리합니다.
+   *  1) 기본적으로는 참여인원수를 1 감소시킵니다.
+   *  2) 마지막 남은 한명이 퇴장하는 경우 방을 제거합니다.
+   * @param id
+   */
+  async handleLeavingRoom(id: number) {
+    const connection: Connection = getConnection();
+
+    const runner: QueryRunner = connection.createQueryRunner();
+    await runner.connect();
+    await runner.startTransaction();
+
+    try {
+      const [{ numberOfGamers, maxNumberOfGamers }] = await runner.query(
+        `select "numberOfGamers"
+                     , "maxNumberOfGamers" 
+                 from "game_room" 
+                where id = ${id} for update`,
+      );
+
+      // 마지막 남은 인원이 퇴장하는 경우 방을 제거합니다.
+      if (numberOfGamers === 1) {
+        this.logger.debug(`마지막으로 남은 인원이 퇴장하여 해당 방(id=${id})을 제거합니다`);
+        await runner.query(`delete from game_room where id = ${id}`);
+        await runner.commitTransaction();
+        return;
+      }
+
+      this.logger.debug(`참여 인원수를 내립니다! (총 인원수 : ${numberOfGamers - 1}/${maxNumberOfGamers})`);
+      await runner.query(
+        `update "game_room"
+                  set "numberOfGamers" = "numberOfGamers" - 1
+                where id = ${id}`,
+      );
+      await runner.commitTransaction();
+      return;
+    } catch (e) {
+      await runner.rollbackTransaction();
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    } finally {
+      await runner.release();
+    }
+  }
 }

@@ -11,6 +11,7 @@ import { Logger } from '@nestjs/common';
 import { EventType } from './event.constant';
 import { Server } from 'socket.io';
 import { ChatMessage } from './messages/chat.message';
+import { GameRoomService } from '../modules/game-room/game-room.service';
 
 @WebSocketGateway(8080, {
   cors: { origin: ['http://peterchat.duckdns.org', 'http://localhost:3000'] },
@@ -22,6 +23,8 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
   server: Server;
+
+  constructor(private readonly gameRoomService: GameRoomService) {}
 
   @SubscribeMessage(EventType.CHAT)
   onEvent(@MessageBody() data: ChatMessage, @ConnectedSocket() client: any) {
@@ -87,15 +90,13 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * 소켓 연결이 끊길 때
    * @param client
    */
-  handleDisconnect(@ConnectedSocket() client: any): any {
+  async handleDisconnect(@ConnectedSocket() client: any): Promise<any> {
+    await this.gameRoomService.handleLeavingRoom(client.roomId);
     this.wsClients = this.wsClients.filter(weClient => weClient !== client);
     // const nickNames = this.wsClients.map(wsClient => wsClient.nickName);
     const nickNames = this.wsClients
       .filter(wsClient => wsClient.rooms.has(client.roomId))
       .map(wsClient => wsClient.nickName);
-
-    // TODO 1: 인원수 줄이기 (numberOfGamers 를 줄이기)
-    // TODO 2: 남은 사람들 없으면 방폭!
 
     const message = {
       nickName: client.nickName,
