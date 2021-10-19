@@ -39,6 +39,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.1.5",
+    "slack-node": "^0.1.8",
     "typeorm": "^0.2.37"
   },
   "devDependencies": {

@@ -22,6 +22,7 @@ export class AuthController {
 
     // 아이디, 비밀번호가 유효하면 jwt 토큰을 생성하여 전달합니다.
     const accessToken = await this.authService.generateJwtToken(user);
+    // TODO : 로그인 슬랙 알림 메시지 전송 로직 추가
     const message = '로그인에 성공하였습니다.';
     return {
       message,
