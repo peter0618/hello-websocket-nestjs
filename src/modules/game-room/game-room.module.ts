@@ -8,5 +8,6 @@ import { GameRoomRepository } from './game-room.repository';
   imports: [TypeOrmModule.forFeature([GameRoomRepository])],
   controllers: [GameRoomController],
   providers: [GameRoomService],
+  exports: [GameRoomService],
 })
 export class GameRoomModule {}
