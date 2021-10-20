@@ -5,9 +5,9 @@ import { UserMapper } from './mapper/user.mapper';
 import { CreateUserResDto } from './dto/user.response.dto';
 import { generateHash } from '../../common/utils/crypto.util';
 import { User } from './entity/user.entity';
-import { generate_sign_up_alarm_message } from '../../common/utils/slack.message.template';
-import { SlackUtil } from '../../common/utils/slack.util';
+import { generate_sign_up_alarm_message } from '../../slack-notification/message-templates/slack.message.template';
 import { ConfigService } from '@nestjs/config';
+import { SlackNotificationService } from '../../slack-notification/slack-notification.service';
 
 @Injectable()
 export class UserService {
@@ -15,6 +15,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly userMapper: UserMapper,
     private readonly configService: ConfigService,
+    private readonly slackNotificationService: SlackNotificationService,
   ) {}
 
   /**
@@ -40,7 +41,7 @@ export class UserService {
       const title = '신규 회원가입 알림';
       const message = generate_sign_up_alarm_message(userEntity);
       const icon = ':helmet_with_white_cross';
-      SlackUtil.send(title, message, null, icon);
+      this.slackNotificationService.sendMessage(title, message, null, icon);
     }
     return this.userMapper.toCreateUserResponseDto(userEntity);
   }
